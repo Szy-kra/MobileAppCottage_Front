@@ -44,7 +44,7 @@ const LoginScreen = ({ navigation }: any) => {
         } else {
           Alert.alert("Błąd logowania", "Nieprawidłowe dane uwierzytelniające.");
         }
-      } catch (err) {
+      } catch  {
         Alert.alert("Błąd połączenia", "Nie udało się połączyć z API (10.0.2.2:8080).");
       }
     } else {

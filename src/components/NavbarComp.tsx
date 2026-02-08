@@ -71,10 +71,9 @@ const navStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#1a1a1a',
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingTop: 50,
     paddingHorizontal: 15,
-    height: 60,
+    height: 110,
   },
   logoRow: { 
     flexDirection: 'row', 
@@ -88,7 +87,8 @@ const navStyles = StyleSheet.create({
   topLogo: { 
     width: 25, 
     height: 25, 
-    marginRight: 8 
+    marginRight: 8, 
+  
   },
   logoText: { 
     color: '#f7d940', 
@@ -103,10 +103,10 @@ const navStyles = StyleSheet.create({
     textAlign: 'center' 
   },
   topUserIcon: { 
-    width: 30, 
-    height: 30, 
+    width: 35, 
+    height: 35, 
     borderRadius: 15,
-    backgroundColor: '#333' // Lekkie tło, jeśli obrazek by nie wystawał
+    backgroundColor: '#ffda07fd' // Lekkie tło, jeśli obrazek by nie wystawał
   },
   backButton: { 
     padding: 5 
