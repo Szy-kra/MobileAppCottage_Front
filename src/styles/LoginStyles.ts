@@ -3,87 +3,72 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    paddingHorizontal: 25,
     justifyContent: 'center',
-    alignItems: 'center',
+    padding: 25,
   },
   headerContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 40,
   },
   logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 10,
+    width: 110,
+    height: 110,
+    resizeMode: 'contain',
   },
   headerText: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#FFF',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 5,
+    marginTop: 10,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10
   },
   formContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    borderRadius: 15,
     padding: 25,
-    borderRadius: 20,
-    width: '100%',
-    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8,
   },
   inputGroup: {
     marginBottom: 20,
   },
   input: {
-    height: 50,
-    borderBottomWidth: 1.5,
-    borderBottomColor: '#3366FF',
+    borderBottomWidth: 2,
+    borderBottomColor: '#27ae60', 
+    paddingVertical: 8,
     fontSize: 16,
-    color: '#000',
-    paddingHorizontal: 5,
+    color: '#2c3e50',
   },
   formatHint: {
     fontSize: 11,
-    color: '#777',
+    color: '#7f8c8d',
     marginTop: 5,
     fontStyle: 'italic',
   },
-  disabledButton: {
-    backgroundColor: '#A0A0A0', // Szary kolor dla nieaktywnego przycisku
-    height: 55,
+  loginButton: {
+    backgroundColor: '#2ecc71',
+    padding: 16,
     borderRadius: 12,
-    justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
-    opacity: 0.7,
   },
   loginButtonText: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
+    letterSpacing: 1,
   },
-  // To są te "kontenery" - po prostu style grupujące:
   footerLinksContainer: {
     marginTop: 20,
     alignItems: 'center',
   },
-  forgotPasswordText: {
-    color: '#3366FF',
-    fontSize: 14,
-    marginBottom: 15,
-    textDecorationLine: 'underline',
-  },
-  registerContainer: {
-    flexDirection: 'row',
-    marginTop: 5,
-  },
-  newAccountText: {
-    color: '#444',
-    fontSize: 14,
-  },
   registerText: {
-    color: '#3366FF',
-    fontSize: 14,
+    color: '#27ae60',
     fontWeight: 'bold',
-  },
+  }
 });

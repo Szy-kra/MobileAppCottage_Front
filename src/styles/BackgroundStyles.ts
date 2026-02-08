@@ -4,12 +4,12 @@ const { width, height } = Dimensions.get('window');
 
 export const backgroundStyles = StyleSheet.create({
   backgroundImage: {
+    flex: 1,
     width: width,
     height: height,
-    flex: 1,
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.1)', // Minimalne przyciemnienie tła z pagórkami
+    backgroundColor: 'rgba(0,0,0,0.45)', // Przyciemnienie zdjęcia
   }
-}); 
+});

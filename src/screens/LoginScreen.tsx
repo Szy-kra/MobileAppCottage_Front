@@ -6,34 +6,54 @@ import {
   TouchableOpacity, 
   ImageBackground, 
   Image,
-  ScrollView 
+  ScrollView,
+  Alert
 } from 'react-native';
 import { styles } from '../styles/LoginStyles';
 import { backgroundStyles } from '../styles/BackgroundStyles';
 
-// Ścieżki do Twoich grafik
 const backgroundImage = require('../assets/images/background.png');
 const logoImage = require('../assets/images/logo.png');
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleLogin = async () => {
+    if (email.length > 0 && password.length > 0) {
+      try {
+        const response = await fetch('http://10.0.2.2:5000/identity/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+          navigation.navigate('Home');
+        } else {
+          Alert.alert("Błąd logowania", "Nieprawidłowe dane uwierzytelniające.");
+        }
+      } catch {
+        // Usunięto (error) - czysty blok catch dla zachowania porządku w TS
+        Alert.alert("Błąd połączenia", "Nie udało się połączyć z serwerem .NET 8.");
+      }
+    } else {
+      Alert.alert("Błąd walidacji", "Proszę uzupełnić wszystkie pola.");
+    }
+  };
+
+  // Przycisk "wytrych" do szybkiego testowania UI bez sprawdzania API
+  const handleTestBypass = () => {
+    navigation.navigate('Home');
+  };
+
   return (
-    <ImageBackground 
-      source={backgroundImage} 
-      style={backgroundStyles.backgroundImage}
-      resizeMode="cover"
-    >
+    <ImageBackground source={backgroundImage} style={backgroundStyles.backgroundImage}>
       <View style={backgroundStyles.overlay}>
         <ScrollView contentContainerStyle={styles.container}>
           
           <View style={styles.headerContainer}>
-            <Image 
-              source={logoImage} 
-              style={styles.logo} 
-              resizeMode="contain"
-            />
+            <Image source={logoImage} style={styles.logo} />
             <Text style={styles.headerText}>Cottage App</Text>
           </View>
 
@@ -45,8 +65,10 @@ const LoginScreen = () => {
                 placeholderTextColor="#888"
                 value={email}
                 onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
               />
-              <Text style={styles.formatHint}>Format: nazwa@poczta.pl</Text>
+              <Text style={styles.formatHint}>Format: nazwa@domena.pl</Text>
             </View>
 
             <View style={styles.inputGroup}>
@@ -58,30 +80,26 @@ const LoginScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              <Text style={styles.formatHint}>Wymagane: min. 8 znaków</Text>
+              <Text style={styles.formatHint}>Min. 6 znaków (litery i cyfry)</Text>
             </View>
 
-            {/* Przycisk ustawiony jako nieaktywny (disabled) */}
-            <TouchableOpacity 
-              style={styles.disabledButton} 
-              activeOpacity={1}
-              disabled={true}
-            >
-              <Text style={styles.loginButtonText}>ZALOGUJ</Text>
+            {/* Przycisk logowania API */}
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+              <Text style={styles.loginButtonText}>ZALOGUJ SIĘ</Text>
             </TouchableOpacity>
 
-            {/* Nowe elementy pod przyciskiem */}
-            <View style={styles.footerLinksContainer}>
-              <TouchableOpacity>
-                <Text style={styles.forgotPasswordText}>Zapomniałeś hasła?</Text>
-              </TouchableOpacity>
+            {/* GUZIK WYTRYCH - Szary, aby odróżniał się od głównego */}
+            <TouchableOpacity 
+              style={[styles.loginButton, { backgroundColor: '#7f8c8d', marginTop: 12 }]} 
+              onPress={handleTestBypass}
+            >
+              <Text style={styles.loginButtonText}>TESTOWE WEJŚCIE (BYPASS)</Text>
+            </TouchableOpacity>
 
-              <View style={styles.registerContainer}>
-                <Text style={styles.newAccountText}>Jesteś nowy? </Text>
-                <TouchableOpacity>
-                  <Text style={styles.registerText}>Zarejestruj się</Text>
-                </TouchableOpacity>
-              </View>
+            <View style={styles.footerLinksContainer}>
+              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                <Text style={styles.registerText}>Nie masz konta? Zarejestruj się</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
