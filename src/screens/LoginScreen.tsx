@@ -9,6 +9,8 @@ import {
   ScrollView,
   Alert
 } from 'react-native';
+
+// KLUCZOWE: Musimy zaimportować styles, inaczej dostaniesz błąd z Twojego screena
 import { styles } from '../styles/LoginStyles';
 import { backgroundStyles } from '../styles/BackgroundStyles';
 
@@ -22,29 +24,37 @@ const LoginScreen = ({ navigation }: any) => {
   const handleLogin = async () => {
     if (email.length > 0 && password.length > 0) {
       try {
-        const response = await fetch('http://10.0.2.2:5000/identity/login', {
+        // Używamy portu 8080 zgodnie z Twoim sukcesem w Postmanie [image_99059a.png]
+        const response = await fetch('http://10.0.2.2:8080/identity/login', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
           body: JSON.stringify({ email, password })
         });
 
         if (response.ok) {
-          navigation.navigate('Home');
+          const data = await response.json();
+          // Przekazujemy dane do Home, aby wiedział czy użytkownik to Host (bool)
+          navigation.navigate('Home', { 
+            isHost: data.isHost, 
+            userEmail: email 
+          });
         } else {
           Alert.alert("Błąd logowania", "Nieprawidłowe dane uwierzytelniające.");
         }
-      } catch {
-        // Usunięto (error) - czysty blok catch dla zachowania porządku w TS
-        Alert.alert("Błąd połączenia", "Nie udało się połączyć z serwerem .NET 8.");
+      } catch (err) {
+        Alert.alert("Błąd połączenia", "Nie udało się połączyć z API (10.0.2.2:8080).");
       }
     } else {
       Alert.alert("Błąd walidacji", "Proszę uzupełnić wszystkie pola.");
     }
   };
 
-  // Przycisk "wytrych" do szybkiego testowania UI bez sprawdzania API
+  // Przycisk "wytrych" do szybkiego testowania UI
   const handleTestBypass = () => {
-    navigation.navigate('Home');
+    navigation.navigate('Home', { isHost: false, userEmail: 'test-bypass@user.pl' });
   };
 
   return (
@@ -83,12 +93,10 @@ const LoginScreen = ({ navigation }: any) => {
               <Text style={styles.formatHint}>Min. 6 znaków (litery i cyfry)</Text>
             </View>
 
-            {/* Przycisk logowania API */}
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
               <Text style={styles.loginButtonText}>ZALOGUJ SIĘ</Text>
             </TouchableOpacity>
 
-            {/* GUZIK WYTRYCH - Szary, aby odróżniał się od głównego */}
             <TouchableOpacity 
               style={[styles.loginButton, { backgroundColor: '#7f8c8d', marginTop: 12 }]} 
               onPress={handleTestBypass}
@@ -97,7 +105,10 @@ const LoginScreen = ({ navigation }: any) => {
             </TouchableOpacity>
 
             <View style={styles.footerLinksContainer}>
-              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('Register')}
+                style={{ marginTop: 15 }}
+              >
                 <Text style={styles.registerText}>Nie masz konta? Zarejestruj się</Text>
               </TouchableOpacity>
             </View>
