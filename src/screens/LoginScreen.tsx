@@ -10,7 +10,7 @@ import {
   Alert
 } from 'react-native';
 
-// KLUCZOWE: Musimy zaimportować styles, inaczej dostaniesz błąd z Twojego screena
+// Importy zgodnie z Twoją strukturą [cite: 2026-01-11]
 import { styles } from '../styles/LoginStyles';
 import { backgroundStyles } from '../styles/BackgroundStyles';
 
@@ -24,7 +24,7 @@ const LoginScreen = ({ navigation }: any) => {
   const handleLogin = async () => {
     if (email.length > 0 && password.length > 0) {
       try {
-        // Używamy portu 8080 zgodnie z Twoim sukcesem w Postmanie [image_99059a.png]
+        // Logowanie do Twojego API .NET 8 na porcie 8080 [cite: 2026-02-03]
         const response = await fetch('http://10.0.2.2:8080/identity/login', {
           method: 'POST',
           headers: { 
@@ -36,31 +36,26 @@ const LoginScreen = ({ navigation }: any) => {
 
         if (response.ok) {
           const data = await response.json();
-          // Przekazujemy dane do Home, aby wiedział czy użytkownik to Host (bool)
+          // Nawigacja do Home z przekazaniem roli [cite: 2026-01-12]
           navigation.navigate('Home', { 
             isHost: data.isHost, 
             userEmail: email 
           });
         } else {
-          Alert.alert("Błąd logowania", "Nieprawidłowe dane uwierzytelniające.");
+          Alert.alert("Błąd logowania", "Nieprawidłowy e-mail lub hasło.");
         }
-      } catch  {
-        Alert.alert("Błąd połączenia", "Nie udało się połączyć z API (10.0.2.2:8080).");
+      } catch {
+        Alert.alert("Błąd połączenia", "Serwer .NET nie odpowiada (10.0.2.2:8080).");
       }
     } else {
       Alert.alert("Błąd walidacji", "Proszę uzupełnić wszystkie pola.");
     }
   };
 
-  // Przycisk "wytrych" do szybkiego testowania UI
-  const handleTestBypass = () => {
-    navigation.navigate('Home', { isHost: false, userEmail: 'test-bypass@user.pl' });
-  };
-
   return (
     <ImageBackground source={backgroundImage} style={backgroundStyles.backgroundImage}>
       <View style={backgroundStyles.overlay}>
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           
           <View style={styles.headerContainer}>
             <Image source={logoImage} style={styles.logo} />
@@ -68,6 +63,7 @@ const LoginScreen = ({ navigation }: any) => {
           </View>
 
           <View style={styles.formContainer}>
+            {/* Pole E-mail [cite: 2026-01-14] */}
             <View style={styles.inputGroup}>
               <TextInput
                 style={styles.input}
@@ -81,6 +77,7 @@ const LoginScreen = ({ navigation }: any) => {
               <Text style={styles.formatHint}>Format: nazwa@domena.pl</Text>
             </View>
 
+            {/* Pole Hasło [cite: 2026-01-14] */}
             <View style={styles.inputGroup}>
               <TextInput
                 style={styles.input}
@@ -90,28 +87,22 @@ const LoginScreen = ({ navigation }: any) => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              <Text style={styles.formatHint}>Min. 6 znaków (litery i cyfry)</Text>
+              <Text style={styles.formatHint}>Min. 6 znaków</Text>
             </View>
 
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
               <Text style={styles.loginButtonText}>ZALOGUJ SIĘ</Text>
             </TouchableOpacity>
 
+            {/* Link do rejestracji jako jeden klikalny obszar */}
             <TouchableOpacity 
-              style={[styles.loginButton, { backgroundColor: '#7f8c8d', marginTop: 12 }]} 
-              onPress={handleTestBypass}
+              onPress={() => navigation.navigate('Register')}
+              style={styles.registerTouchArea}
             >
-              <Text style={styles.loginButtonText}>TESTOWE WEJŚCIE (BYPASS)</Text>
+              <Text style={styles.noAccountText}>
+                Nie masz konta? <Text style={styles.registerLinkText}>Zarejestruj się</Text>
+              </Text>
             </TouchableOpacity>
-
-            <View style={styles.footerLinksContainer}>
-              <TouchableOpacity 
-                onPress={() => navigation.navigate('Register')}
-                style={{ marginTop: 15 }}
-              >
-                <Text style={styles.registerText}>Nie masz konta? Zarejestruj się</Text>
-              </TouchableOpacity>
-            </View>
           </View>
 
         </ScrollView>

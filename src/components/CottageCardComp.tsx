@@ -1,63 +1,67 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { CottageImages, getCottageImage } from '../assets/ImageScript/ImageAssets';
 
 interface CottageProps {
   name: string;
   price: number;
   location: string;
-  imageUrl: string;
+  imageName?: string;
   maxPeople: number;
   description?: string;
   onPress: () => void;
 }
 
-const CottageCard = ({ name, price, location, imageUrl, maxPeople, description, onPress }: CottageProps) => {
+const CottageCard = ({ name, price, location, imageName, maxPeople, description, onPress }: CottageProps) => {
+  // Logika "Safe Data" [cite: 2026-02-10]
+  const safeName = name || 'Chatka';
+  const safeLocation = location ? location.toUpperCase() : 'POLSKA';
+  const safePrice = price ?? 0;
+  const safeMaxPeople = maxPeople ?? 0;
+  const safeDescription = description || "Uroczy domek w sercu Beskidów.";
+
+  // Dynamiczne pobieranie obrazka ze słownika
+  const resolvedImage = getCottageImage(imageName);
+
   return (
     <View style={cardStyles.card}>
-      {/* Kontener na zdjęcie */}
       <View style={cardStyles.imageContainer}>
-        {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={cardStyles.image} />
-        ) : (
-          <View style={cardStyles.noImage} />
-        )}
+        <Image source={resolvedImage} style={cardStyles.image} />
       </View>
-      
+
       <View style={cardStyles.info}>
         <View style={cardStyles.headerRow}>
           <View style={cardStyles.titleContainer}>
-            <Text style={cardStyles.name}>{name || 'Chatka'}</Text>
-            {/* Bezpieczne toUpperCase - rozwiązuje błąd z Twojego zdjęcia */}
-            <Text style={cardStyles.location}>
-              {location ? location.toUpperCase() : 'POLSKA'}
-            </Text>
+            <Text style={cardStyles.name}>{safeName}</Text>
+            <Text style={cardStyles.location}>{safeLocation}</Text>
           </View>
-          
+
           <View style={cardStyles.priceContainer}>
-            <Text style={cardStyles.price}>{price ?? 0} zł</Text>
+            <Text style={cardStyles.price}>{safePrice} zł</Text>
             <Text style={cardStyles.subPrice}>ZA DOBĘ</Text>
           </View>
         </View>
 
-        {/* Opis domku */}
         <Text style={cardStyles.description} numberOfLines={2}>
-          {description || "Uroczy domek w sercu Beskidów."}
+          {safeDescription}
         </Text>
 
         <View style={cardStyles.divider} />
 
         <View style={cardStyles.footerRow}>
           <View style={cardStyles.peopleContainer}>
-            {/* Niebieska ikona użytkownika */}
             <Image 
-              source={require('../assets/images/user.png')} 
+              source={CottageImages['maxPeopleIcon']} 
               style={cardStyles.userIcon} 
             />
-            <Text style={cardStyles.peopleText}>Max osób: {maxPeople ?? 0}</Text>
+            <Text style={cardStyles.peopleText}>Max osób: {safeMaxPeople}</Text>
           </View>
 
-          {/* Żółty przycisk Więcej z lupą */}
-          <TouchableOpacity style={cardStyles.moreButton} onPress={onPress}>
+          <TouchableOpacity 
+            style={cardStyles.moreButton} 
+            onPress={onPress}
+            activeOpacity={0.7}
+          >
             <Text style={cardStyles.moreButtonText}>🔍 Więcej</Text>
           </TouchableOpacity>
         </View>
@@ -66,14 +70,15 @@ const CottageCard = ({ name, price, location, imageUrl, maxPeople, description, 
   );
 };
 
-const cardStyles = StyleSheet.create({
+// --- STYLE WEWNĄTRZ KOMPONENTU (Zgodnie z zasadą *Comp) ---
+export const cardStyles = StyleSheet.create({
   card: {
-    backgroundColor: '#0a0a0a', // Bardzo ciemne tło
+    backgroundColor: '#0a0a0a',
     borderRadius: 15,
     marginBottom: 20,
     overflow: 'hidden',
     borderWidth: 1.5,
-    borderColor: '#f7d940', // Złota/żółta ramka
+    borderColor: '#f7d940',
     elevation: 5,
   },
   imageContainer: {
@@ -84,6 +89,7 @@ const cardStyles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+    resizeMode: 'cover',
   },
   noImage: {
     flex: 1,
@@ -142,10 +148,10 @@ const cardStyles = StyleSheet.create({
     alignItems: 'center',
   },
   userIcon: {
-    borderRadius: 50,
-    width: 15,
-    height:15,
+    width: 20, 
+    height: 20,
     marginRight: 8,
+    // tintColor USUNIĘTY - ikona wyświetli się w oryginalnych kolorach
   },
   peopleText: {
     fontSize: 15,

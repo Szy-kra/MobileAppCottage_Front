@@ -5,8 +5,17 @@ import {
   Text,
   StyleSheet,
   Image,
+  Platform,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+
+// Definicja dostępnych tras dla nawigacji
+type RootStackParamList = {
+  Home: undefined;
+  ProfileHost: undefined;
+  ProfileGuest: undefined;
+  CottageDetail: { id: number };
+};
 
 interface NavbarProps {
   title?: string;
@@ -14,12 +23,10 @@ interface NavbarProps {
 }
 
 export default function Navbar({ title, onBack }: NavbarProps) {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  // Funkcja obsługująca przekierowanie do odpowiedniego profilu
   const handleProfileNavigation = () => {
-    // DOCELOWO: Tutaj pobierzesz rolę z Twojego systemu logowania (.NET 8)
-    // Na potrzeby testów zmień poniższą wartość na 'GUEST' lub 'HOST'
+    // Statyczna rola zgodnie z wymaganiem testowym
     const userRole: 'GUEST' | 'HOST' = 'HOST'; 
 
     if (userRole === 'HOST') {
@@ -31,13 +38,12 @@ export default function Navbar({ title, onBack }: NavbarProps) {
 
   return (
     <View style={navStyles.topBar}>
-      <View style={navStyles.logoRow}>
+      <View style={navStyles.leftSection}>
         {onBack ? (
           <TouchableOpacity onPress={onBack} style={navStyles.backButton}>
             <Text style={navStyles.backText}>{"<"}</Text>
           </TouchableOpacity>
         ) : (
-          /* Kliknięcie w logo lub napis przenosi na Home */
           <TouchableOpacity 
             style={navStyles.logoButton} 
             onPress={() => navigation.navigate('Home')}
@@ -51,16 +57,17 @@ export default function Navbar({ title, onBack }: NavbarProps) {
         )}
       </View>
 
-      {/* Tytuł strony wyświetlany na środku */}
-      {title && <Text style={navStyles.centerTitle}>{title}</Text>}
-
-      {/* Ikonka użytkownika z logiką wyboru profilu */}
-      <TouchableOpacity onPress={handleProfileNavigation}>
-        <Image
-          source={require('../assets/images/user.png')}
-          style={navStyles.topUserIcon}
-        />
-      </TouchableOpacity>
+      <View style={navStyles.rightSection}>
+        <TouchableOpacity 
+          onPress={handleProfileNavigation}
+          style={navStyles.userTouchArea}
+        >
+          <Image
+            source={require('../assets/images/user.png')}
+            style={navStyles.topUserIcon}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -68,52 +75,28 @@ export default function Navbar({ title, onBack }: NavbarProps) {
 const navStyles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#1a1a1a',
-    paddingTop: 50,
+    paddingTop: Platform.OS === 'ios' ? 50 : 35,
     paddingHorizontal: 15,
-    height: 110,
+    height: 100,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(247, 217, 64, 0.2)',
   },
-  logoRow: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    flex: 1 
-  },
-  logoButton: { 
-    flexDirection: 'row', 
-    alignItems: 'center' 
-  },
-  topLogo: { 
-    width: 25, 
-    height: 25, 
-    marginRight: 8, 
-  
-  },
-  logoText: { 
-    color: '#f7d940', 
-    fontWeight: 'bold', 
-    fontSize: 16 
-  },
-  centerTitle: { 
-    color: '#fff', 
-    fontSize: 14, 
-    fontWeight: 'bold', 
-    flex: 1, 
-    textAlign: 'center' 
-  },
+  leftSection: { flex: 1 },
+  rightSection: { flex: 1, alignItems: 'flex-end' },
+  logoButton: { flexDirection: 'row', alignItems: 'center' },
+  topLogo: { width: 25, height: 25, marginRight: 8 },
+  logoText: { color: '#f7d940', fontWeight: 'bold', fontSize: 16 },
+  userTouchArea: { padding: 5 },
   topUserIcon: { 
     width: 35, 
     height: 35, 
-    borderRadius: 15,
-    backgroundColor: '#ffda07fd' // Lekkie tło, jeśli obrazek by nie wystawał
+    borderRadius: 17.5, 
+    backgroundColor: '#f7d940',
+    tintColor: '#000'
   },
-  backButton: { 
-    padding: 5 
-  },
-  backText: { 
-    color: '#f7d940', 
-    fontSize: 24, 
-    fontWeight: 'bold' 
-  }
+  backButton: { padding: 5 },
+  backText: { color: '#f7d940', fontSize: 24, fontWeight: 'bold' }
 });

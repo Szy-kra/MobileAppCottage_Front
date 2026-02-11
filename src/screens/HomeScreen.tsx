@@ -1,87 +1,80 @@
 import React, { useState, useEffect } from 'react';
 import { 
+  View, 
   FlatList, 
-  StyleSheet, 
-  SafeAreaView, 
-  ImageBackground, 
-  View,
-  ActivityIndicator
+  ActivityIndicator, 
+  ImageBackground,
+  ListRenderItem
 } from 'react-native';
-import Navbar from '../components/NavbarComp';
+
+// Importy usług i komponentów [cite: 2026-01-12, 2026-02-11]
+import { AllCottageService, Cottage } from '../props/AllCottageServiceProps';
 import CottageCard from '../components/CottageCardComp';
-import Filtration from '../components/FiltrationComp';
+import Navbar from '../components/NavbarComp';
+import Filtration from '../components/FiltrationComp'; // Wstrzyknięty komponent filtracji
 import { backgroundStyles } from '../styles/BackgroundStyles';
 
-const backgroundImage = require('../assets/images/background.png');
-
 const HomeScreen = ({ navigation }: any) => {
-  const [cottages, setCottages] = useState([]);
+  // 1. Hooki stanu (zawsze na górze komponentu)
+  const [cottages, setCottages] = useState<Cottage[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Prosty fetch bez zbędnych paczek
-  const getData = (params = {}) => {
-    setLoading(true);
-    
-    // Budujemy prosty adres dla emulatora [cite: 2026-02-01]
-    // Zamień localhost na 10.0.2.2, żeby Android widział Twój serwer .NET
-    const query = new URLSearchParams(params).toString();
-    const url = `http://10.0.2.2:8080/api/cottage?${query}`;
-
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        setCottages(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.log("Błąd fetch:", err);
-        setLoading(false);
-      });
-  };
-
-  // Pobierz dane raz na start
+  // 2. Hook efektu do pobierania danych z API .NET 8 [cite: 2026-01-12]
   useEffect(() => {
-    getData();
+    const fetchCottages = async () => {
+      try {
+        const data = await AllCottageService.GetAll();
+        setCottages(data);
+      } catch (error) {
+        console.error("Błąd API .NET 8:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCottages();
   }, []);
 
+  // 3. Funkcja renderująca pojedynczy element listy [cite: 2026-02-11]
+  const renderCottage: ListRenderItem<Cottage> = ({ item }) => (
+    <CottageCard
+      name={item.name}
+      price={item.price}
+      location={item.city}
+      imageName={item.imageUrls?.[0] || 'placeholder'}
+      maxPeople={item.maxPersons}
+      onPress={() => navigation.navigate('CottageDetail', { id: item.id })}
+    />
+  );
+
   return (
-    <ImageBackground source={backgroundImage} style={backgroundStyles.backgroundImage}>
-      <View style={styles.overlay}>
-        <SafeAreaView style={styles.safeArea}>
-          <Navbar title="" />
-          
-          {/* Przekazujemy parametry z modala prosto do fetch */}
-          <Filtration onFilter={(vals: any) => getData(vals)} />
-          
+    <View style={{ flex: 1, backgroundColor: '#1a1a1a' }}>
+      {/* Navbar na samej górze */}
+      <Navbar title="Przeglądaj Domki" />
+
+      {/* WSTRZYKNIĘCIE FILTRACJI: Zaraz pod Navbarem [cite: 2026-02-11] */}
+      <Filtration />
+
+      <ImageBackground 
+        source={require('../assets/images/background.png')} 
+        style={backgroundStyles.backgroundImage}
+      >
+        <View style={backgroundStyles.overlay}>
           {loading ? (
-            <ActivityIndicator size="large" color="#f7d940" style={{marginTop: 50}} />
+            <ActivityIndicator size="large" color="#f7d940" style={{ marginTop: 50 }} />
           ) : (
             <FlatList
               data={cottages}
-              keyExtractor={(item: any) => item.id.toString()}
-              contentContainerStyle={styles.listContent}
-              renderItem={({ item }) => (
-                <CottageCard 
-                  name={item.name} 
-                  price={item.price} 
-                  location={item.location} 
-                  imageUrl={item.imageUrl}
-                  maxPeople={item.maxPeople}
-                  onPress={() => navigation.navigate('CottageDetail', { id: item.id })}
-                />
-              )}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderCottage}
+              contentContainerStyle={{ padding: 15, paddingBottom: 100 }}
+              // Zapobiega "ukrywaniu" elementów pod navbarami na niektórych urządzeniach
+              showsVerticalScrollIndicator={false}
             />
           )}
-        </SafeAreaView>
-      </View>
-    </ImageBackground>
+        </View>
+      </ImageBackground>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
-  listContent: { padding: 20, paddingBottom: 40 }
-});
 
 export default HomeScreen;

@@ -1,52 +1,56 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Importy ekranów
+// Importy ekranów - dodano brakujący RegisterScreen
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import CottageDetailScreen from './src/screens/CottageDetailScreen';
-import CottageScreen from './src/screens/CottageScreen';
-import ProfileGuestScreen from './src/screens/ProfileGuestScreen';
+import AddEditCottageScreen from './src/screens/AddEditCottageScreen'; 
 import ProfileHostScreen from './src/screens/ProfileHostScreen';
+import ProfileGuestScreen from './src/screens/ProfileGuestScreen';
 
-// Definicja dostępnych tras
+// Definicja typów nawigacji - dodano Register oraz ProfileGuest [cite: 2026-02-11]
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
-  Home: undefined;
-  CottageDetail: { cottageId: string };
-  Cottage: undefined;
-  ProfileGuest: undefined;
+  Home: { isHost?: boolean; userEmail?: string };
+  CottageDetail: { id: number };
+  AddEditCottage: { cottage?: any }; 
   ProfileHost: undefined;
+  ProfileGuest: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const App = () => {
+export default function App() {
   return (
     <NavigationContainer>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-      
       <Stack.Navigator 
-        initialRouteName="Login"
-        screenOptions={{
-          headerShown: false,
-          animation: 'fade'
-        }}
+        initialRouteName="Login" 
+        screenOptions={{ headerShown: false }}
       >
+        {/* Ekran logowania */}
         <Stack.Screen name="Login" component={LoginScreen} />
+        
+        {/* NAPRAWIONO: Dodano ekran rejestracji [cite: 2026-02-11] */}
         <Stack.Screen name="Register" component={RegisterScreen} />
+        
+        {/* Ekran główny */}
         <Stack.Screen name="Home" component={HomeScreen} />
+        
+        {/* Szczegóły domku */}
         <Stack.Screen name="CottageDetail" component={CottageDetailScreen} />
-        <Stack.Screen name="Cottage" component={CottageScreen} />
-        <Stack.Screen name="ProfileGuest" component={ProfileGuestScreen} />
+        
+        {/* Dodawanie/Edycja domku */}
+        <Stack.Screen name="AddEditCottage" component={AddEditCottageScreen} />
+        
+        {/* Profile użytkowników */}
         <Stack.Screen name="ProfileHost" component={ProfileHostScreen} />
+        <Stack.Screen name="ProfileGuest" component={ProfileGuestScreen} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
-};
-
-export default App;
+}

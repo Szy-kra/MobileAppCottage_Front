@@ -13,7 +13,7 @@ import { cottageStyles } from '../styles/CottageStyles';
 
 const backgroundImage = require('../assets/images/background.png');
 
-const CottageScreen = ({ navigation }: any) => {
+const AddEditCottageScreen = ({ navigation }: any) => {
   return (
     <ImageBackground source={backgroundImage} style={backgroundStyles.backgroundImage}>
       <View style={backgroundStyles.overlay}>
@@ -50,4 +50,4 @@ const CottageScreen = ({ navigation }: any) => {
   );
 };
 
-export default CottageScreen;
+export default AddEditCottageScreen;
